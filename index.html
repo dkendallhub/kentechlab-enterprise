@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kentech Lab — Enterprise Infrastructure Lab</title>
+<meta name="description" content="A personal enterprise infrastructure lab spanning AWS, Azure, Cloudflare, Docker, Synology, monitoring, and PowerShell automation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A101C;
+    --panel: #111A2C;
+    --panel-raised: #162136;
+    --border: #223250;
+    --text: #E7ECF3;
+    --text-dim: #8697B3;
+    --text-faint: #52627E;
+    --amber: #F5A524;
+    --cyan: #4FD1C5;
+    --red: #F2545B;
+
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,209,197,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,209,197,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(10,16,28,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .brand {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .navlinks {
+    display: flex;
+    gap: 28px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .navlinks a { text-decoration: none; transition: color 0.15s; }
+  .navlinks a:hover { color: var(--text); }
+  .navlinks a.gh {
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 4px;
+  }
+  .navlinks a.gh:hover { border-color: var(--cyan); color: var(--cyan); }
+  @media (max-width: 640px) { .navlinks span.hide-mobile { display: none; } }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+  }
+
+  /* HERO */
+  .hero {
+    padding: 88px 0 64px;
+  }
+  .terminal {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    max-width: 460px;
+    color: var(--text-dim);
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .terminal .line { margin: 3px 0; }
+  .terminal .prompt { color: var(--cyan); }
+  .terminal .ok { color: var(--amber); }
+  .cursor {
+    display: inline-block;
+    width: 7px; height: 14px;
+    background: var(--cyan);
+    vertical-align: -2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  h1 {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: clamp(34px, 5.4vw, 58px);
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    margin: 26px 0 18px;
+    max-width: 780px;
+  }
+  h1 .accent { color: var(--amber); }
+
+  .hero-sub {
+    color: var(--text-dim);
+    font-size: 17px;
+    max-width: 560px;
+    margin-bottom: 32px;
+  }
+
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 13px;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s, border-color 0.15s, background 0.15s;
+    display: inline-block;
+  }
+  .btn-primary { background: var(--amber); color: #1A1305; font-weight: 600; }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-ghost { border: 1px solid var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* SECTION HEADERS */
+  section { padding: 72px 0; border-top: 1px solid var(--border); }
+  .sec-head { margin-bottom: 36px; }
+  .sec-title {
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  /* RACK BOARD */
+  .rack {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .unit {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+  }
+  .unit.visible { opacity: 1; transform: translateY(0); }
+  .unit:hover { border-color: var(--cyan); }
+  .unit-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .unit-id {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+  }
+  .led-row { display: flex; align-items: center; gap: 6px; }
+  .led {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px var(--cyan);
+    animation: pulse 2.8s ease-in-out infinite;
+  }
+  .status-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+  }
+  .unit-name {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 2px;
+  }
+  .unit-role {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: var(--mono);
+    margin-bottom: 10px;
+  }
+  .unit-desc { font-size: 13.5px; color: var(--text-dim); }
+  .unit-uptime {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* METRICS */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .metric {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+  }
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .metric-value {
+    font-family: var(--mono);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 8px 0 10px;
+  }
+  .bar-track {
+    height: 4px;
+    background: var(--panel-raised);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar-fill { height: 100%; background: var(--cyan); border-radius: 2px; }
+  .bar-fill.amber { background: var(--amber); }
+
+  /* PROJECTS */
+  .projects { display: grid; gap: 14px; }
+  .project {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 600px) { .project { grid-template-columns: 1fr; gap: 8px; } }
+  .project-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .project h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .project p { font-size: 13.5px; color: var(--text-dim); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--cyan); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>kentech-lab</div>
+    <div class="navlinks">
+      <a href="#stack" class="hide-mobile">stack</a>
+      <a href="#monitoring" class="hide-mobile">monitoring</a>
+      <a href="#projects" class="hide-mobile">projects</a>
+      <a href="https://github.com/dkendallhub/kentechlab-enterprise" class="gh" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="terminal" id="terminal"></div>
+    <h1>Enterprise infrastructure, <span class="accent">run out of a home rack.</span></h1>
+    <p class="hero-sub">A personal lab built to the same standard as production: identity, edge, containers, storage, and automation, wired together and actually monitored.</p>
+    <div class="cta-row">
+      <a href="#stack" class="btn btn-primary">View the stack</a>
+      <a href="https://github.com/dkendallhub/kentechlab-enterprise" class="btn btn-ghost" target="_blank" rel="noopener">Browse the repo</a>
+    </div>
+  </div>
+</header>
+
+<section id="stack">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">// rack status</div>
+      <div class="sec-title">What's running</div>
+    </div>
+    <div class="rack" id="rack">
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U01</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">AWS</div><div class="unit-role">Compute &amp; IAM</div>
+        <div class="unit-desc">Spot fleet compute, least-privilege IAM policies, and S3 lifecycle rules tuned for cold storage.</div>
+        <div class="unit-uptime"><span>uptime</span><span>214d</span></div></div>
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U02</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">Azure</div><div class="unit-role">Hybrid identity</div>
+        <div class="unit-desc">Entra ID sync, conditional access policies, and hybrid domain join across on-prem and cloud.</div>
+        <div class="unit-uptime"><span>uptime</span><span>190d</span></div></div>
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U03</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">Cloudflare</div><div class="unit-role">Edge &amp; DNS</div>
+        <div class="unit-desc">Zero Trust tunnels, DNS failover, and Workers handling lightweight edge logic.</div>
+        <div class="unit-uptime"><span>uptime</span><span>231d</span></div></div>
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U04</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">Docker</div><div class="unit-role">Containers</div>
+        <div class="unit-desc">Compose stacks for internal tooling, images pinned and scanned before rollout.</div>
+        <div class="unit-uptime"><span>uptime</span><span>176d</span></div></div>
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U05</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">Synology</div><div class="unit-role">Storage &amp; backup</div>
+        <div class="unit-desc">RAID6 array with Hyper Backup offsite replication and snapshot retention for rollback.</div>
+        <div class="unit-uptime"><span>uptime</span><span>340d</span></div></div>
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U06</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">Monitoring</div><div class="unit-role">Observability</div>
+        <div class="unit-desc">Uptime checks, log aggregation, and alert routing tuned to cut noise, not signal.</div>
+        <div class="unit-uptime"><span>uptime</span><span>301d</span></div></div>
+
+      <div class="unit"><div class="unit-top"><span class="unit-id">U07</span><span class="led-row"><span class="led"></span><span class="status-text">ONLINE</span></span></div>
+        <div class="unit-name">PowerShell</div><div class="unit-role">Automation</div>
+        <div class="unit-desc">Scheduled runbooks for patching, backup verification, and configuration drift detection.</div>
+        <div class="unit-uptime"><span>uptime</span><span>264d</span></div></div>
+
+    </div>
+  </div>
+</section>
+
+<section id="monitoring">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">// live board</div>
+      <div class="sec-title">Monitoring</div>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Uptime, 30d</div>
+        <div class="metric-value">99.97%</div>
+        <div class="bar-track"><div class="bar-fill" style="width:99.9%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Nodes online</div>
+        <div class="metric-value">12 / 12</div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Backups verified</div>
+        <div class="metric-value">Daily</div>
+        <div class="bar-track"><div class="bar-fill amber" style="width:88%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Alert routing</div>
+        <div class="metric-value">&lt; 2 min</div>
+        <div class="bar-track"><div class="bar-fill" style="width:92%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">// field notes</div>
+      <div class="sec-title">Recent work</div>
+    </div>
+    <div class="projects">
+      <div class="project">
+        <span class="project-tag">Networking</span>
+        <div><h3>Automated failover for internal DNS</h3><p>Secondary resolver takes over within seconds of a health check failure, with alerting wired straight into the monitoring stack.</p></div>
+      </div>
+      <div class="project">
+        <span class="project-tag">Automation</span>
+        <div><h3>Backup verification pipeline</h3><p>PowerShell scripts that talk to the Synology API, confirm each snapshot restores cleanly, and log the result before anyone has to ask.</p></div>
+      </div>
+      <div class="project">
+        <span class="project-tag">Security</span>
+        <div><h3>Zero Trust access without a VPN client</h3><p>Cloudflare Tunnel plus access policies replaced a legacy VPN, cutting client-side setup for every new device to zero.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; width:100%;">
+    <span>kentech-lab © 2026</span>
+    <a href="https://github.com/dkendallhub/kentechlab-enterprise" target="_blank" rel="noopener">github.com/dkendallhub/kentechlab-enterprise</a>
+  </div>
+</footer>
+
+<script>
+  // Terminal boot sequence
+  const lines = [
+    { t: '$ whoami', cls: 'prompt' },
+    { t: 'kentech-lab', cls: '' },
+    { t: '$ uptime', cls: 'prompt' },
+    { t: '247 days, 14:22:07', cls: '' },
+    { t: '$ systemctl status core-infra', cls: 'prompt' },
+    { t: '\u25CF active (running)', cls: 'ok' }
+  ];
+  const term = document.getElementById('terminal');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function typeLines() {
+    if (reduced) {
+      term.innerHTML = lines.map(l => `<div class="line ${l.cls}">${l.t}</div>`).join('');
+      return;
+    }
+    let i = 0;
+    function nextLine() {
+      if (i >= lines.length) {
+        const c = document.createElement('span');
+        c.className = 'cursor';
+        term.appendChild(c);
+        return;
+      }
+      const div = document.createElement('div');
+      div.className = 'line ' + lines[i].cls;
+      term.appendChild(div);
+      const text = lines[i].t;
+      let j = 0;
+      const speed = lines[i].cls === 'prompt' ? 28 : 14;
+      const iv = setInterval(() => {
+        div.textContent = text.slice(0, j + 1);
+        j++;
+        if (j >= text.length) {
+          clearInterval(iv);
+          i++;
+          setTimeout(nextLine, 160);
+        }
+      }, speed);
+    }
+    nextLine();
+  }
+  typeLines();
+
+  // Reveal rack units on scroll
+  const units = document.querySelectorAll('.unit');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, idx) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), idx * 60);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  units.forEach(u => io.observe(u));
+</script>
+
+</body>
+</html>
