@@ -212,7 +212,7 @@
     padding: 18px;
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s, box-shadow 0.2s;
   }
   .unit.visible { opacity: 1; transform: translateY(0); }
   .unit:hover { border-color: var(--cyan); }
@@ -263,6 +263,33 @@
     color: var(--text-faint);
     display: flex;
     justify-content: space-between;
+  }
+
+  /* ACCESS LINKS (clickable rack-style cards) */
+  .unit-link {
+    text-decoration: none;
+    display: block;
+  }
+  .unit-link .unit {
+    cursor: pointer;
+    position: relative;
+  }
+  .unit-link .unit:hover {
+    border-color: var(--amber);
+    box-shadow: 0 8px 30px -10px rgba(245,165,36,0.25);
+    transform: translateY(-2px);
+  }
+  .unit-link .unit:hover .unit-name { color: var(--amber); }
+  .unit-link .unit-name { transition: color 0.15s; }
+  .unit-arrow {
+    font-family: var(--mono);
+    color: var(--text-faint);
+    font-size: 13px;
+    transition: transform 0.15s, color 0.15s;
+  }
+  .unit-link .unit:hover .unit-arrow {
+    color: var(--amber);
+    transform: translateX(3px);
   }
 
   /* METRICS */
@@ -346,6 +373,7 @@
       <a href="#stack" class="hide-mobile">stack</a>
       <a href="#monitoring" class="hide-mobile">monitoring</a>
       <a href="#projects" class="hide-mobile">projects</a>
+      <a href="#access" class="hide-mobile">access</a>
       <a href="https://github.com/dkendallhub/kentechlab-enterprise" class="gh" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
   </div>
@@ -460,6 +488,45 @@
         <span class="project-tag">Security</span>
         <div><h3>Zero Trust access without a VPN client</h3><p>Cloudflare Tunnel plus access policies replaced a legacy VPN, cutting client-side setup for every new device to zero.</p></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="access">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">// quick access</div>
+      <div class="sec-title">Lab links</div>
+    </div>
+    <div class="rack">
+
+      <a class="unit-link" href="https://nas.kentechlab.net" target="_blank" rel="noopener">
+        <div class="unit visible">
+          <div class="unit-top"><span class="unit-id">LNK1</span><span class="led-row"><span class="led"></span><span class="status-text">SECURED</span></span></div>
+          <div class="unit-name">NAS</div><div class="unit-role">Synology DSM</div>
+          <div class="unit-desc">Primary storage node — Zero Trust protected.</div>
+          <div class="unit-uptime"><span>cloudflare access</span><span class="unit-arrow">open →</span></div>
+        </div>
+      </a>
+
+      <a class="unit-link" href="https://nas2.kentechlab.net" target="_blank" rel="noopener">
+        <div class="unit visible">
+          <div class="unit-top"><span class="unit-id">LNK2</span><span class="led-row"><span class="led"></span><span class="status-text">SECURED</span></span></div>
+          <div class="unit-name">NAS 2</div><div class="unit-role">Synology DSM</div>
+          <div class="unit-desc">Secondary storage node — Zero Trust protected.</div>
+          <div class="unit-uptime"><span>cloudflare access</span><span class="unit-arrow">open →</span></div>
+        </div>
+      </a>
+
+      <a class="unit-link" href="https://status.kentechlab.net" target="_blank" rel="noopener">
+        <div class="unit visible">
+          <div class="unit-top"><span class="unit-id">LNK3</span><span class="led-row"><span class="led"></span><span class="status-text">LIVE</span></span></div>
+          <div class="unit-name">Status</div><div class="unit-role">Uptime Kuma</div>
+          <div class="unit-desc">Real-time monitoring dashboard for all lab services.</div>
+          <div class="unit-uptime"><span>public</span><span class="unit-arrow">open →</span></div>
+        </div>
+      </a>
+
     </div>
   </div>
 </section>
