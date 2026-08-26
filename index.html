@@ -374,6 +374,7 @@
       <a href="#monitoring" class="hide-mobile">monitoring</a>
       <a href="#projects" class="hide-mobile">projects</a>
       <a href="#access" class="hide-mobile">access</a>
+      <a href="#about" class="hide-mobile">about</a>
       <a href="https://github.com/dkendallhub/kentechlab-enterprise" class="gh" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
   </div>
@@ -500,33 +501,43 @@
     </div>
     <div class="rack">
 
-      <a class="unit-link" href="https://nas.kentechlab.net" target="_blank" rel="noopener">
-        <div class="unit visible">
-          <div class="unit-top"><span class="unit-id">LNK1</span><span class="led-row"><span class="led"></span><span class="status-text">SECURED</span></span></div>
-          <div class="unit-name">NAS</div><div class="unit-role">Synology DSM</div>
-          <div class="unit-desc">Primary storage node — Zero Trust protected.</div>
-          <div class="unit-uptime"><span>cloudflare access</span><span class="unit-arrow">open →</span></div>
-        </div>
-      </a>
-
-      <a class="unit-link" href="https://nas2.kentechlab.net" target="_blank" rel="noopener">
-        <div class="unit visible">
-          <div class="unit-top"><span class="unit-id">LNK2</span><span class="led-row"><span class="led"></span><span class="status-text">SECURED</span></span></div>
-          <div class="unit-name">NAS 2</div><div class="unit-role">Synology DSM</div>
-          <div class="unit-desc">Secondary storage node — Zero Trust protected.</div>
-          <div class="unit-uptime"><span>cloudflare access</span><span class="unit-arrow">open →</span></div>
-        </div>
-      </a>
-
       <a class="unit-link" href="https://status.kentechlab.net" target="_blank" rel="noopener">
         <div class="unit visible">
-          <div class="unit-top"><span class="unit-id">LNK3</span><span class="led-row"><span class="led"></span><span class="status-text">LIVE</span></span></div>
+          <div class="unit-top"><span class="unit-id">LNK1</span><span class="led-row"><span class="led"></span><span class="status-text">LIVE</span></span></div>
           <div class="unit-name">Status</div><div class="unit-role">Uptime Kuma</div>
           <div class="unit-desc">Real-time monitoring dashboard for all lab services.</div>
           <div class="unit-uptime"><span>public</span><span class="unit-arrow">open →</span></div>
         </div>
       </a>
 
+      <div class="unit visible">
+        <div class="unit-top"><span class="unit-id">LNK2</span><span class="led-row"><span class="led"></span><span class="status-text">GATED</span></span></div>
+        <div class="unit-name">Internal systems</div><div class="unit-role">NAS, admin panels</div>
+        <div class="unit-desc">Storage and admin consoles sit behind Cloudflare Zero Trust — identity-gated, no public hostnames or open ports.</div>
+        <div class="unit-uptime"><span>access</span><span>request only</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">// operator</div>
+      <div class="sec-title">About</div>
+    </div>
+    <div class="project" style="grid-template-columns: 120px 1fr;">
+      <span class="project-tag">Dwayne Kendall</span>
+      <div>
+        <h3>Systems Engineer</h3>
+        <p>15+ years keeping business-critical infrastructure running reliably. This lab is where I test and demonstrate practices — Zero Trust access, redundant DNS, automated backup verification — before they'd ever touch production.</p>
+        <p style="margin-top:10px;">
+          <a href="https://github.com/dkendallhub" target="_blank" rel="noopener" style="color:var(--cyan); text-decoration:none;">GitHub ↗</a>
+          &nbsp;&nbsp;
+          <a href="mailto:dwayne.kendall@outlook.com" style="color:var(--cyan); text-decoration:none;">Contact ↗</a>
+        </p>
+      </div>
     </div>
   </div>
 </section>
