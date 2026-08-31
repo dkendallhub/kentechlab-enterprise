@@ -2,7 +2,7 @@
 
 A personal enterprise infrastructure lab built to the same standard as production: identity, edge, containers, storage, and automation, wired together and actually monitored.
 
-🌐 **Live sites:** [kentechlab.net](https://kentechlab.net) · [kentechsolution.com](https://kentechsolution.com)
+🌐 **Live sites:** [kentechlab.net](https://kentechlab.net) · [kentechsolution.com](https://kentechsolution.com) · [media.kentechlab.net](https://media.kentechlab.net)
 
 ---
 
@@ -22,6 +22,7 @@ This repo hosts the source for the Kentech Lab landing page, a live dashboard-st
 | **Remote Access** | WireGuard VPN (UniFi Cloud Gateway) with Cloudflare-backed Dynamic DNS, giving full network-level access and home DNS filtering from anywhere |
 | **Automation** | PowerShell scripts for backup verification and configuration drift detection |
 | **Web Hosting / CDN** | AWS CloudFront + Route 53 + ACM. Registered domain (`kentechsolution.com`) with a public TLS certificate provisioned through ACM, attached as an alternate domain name on a CloudFront distribution, and routed via Route 53 alias records (no third-party redirect/shortener in the path). [Full writeup](docs/aws-hosting.md) |
+| **Second Web Hosting Pattern** | AWS CloudFront + ACM + Cloudflare DNS. A second CloudFront site given a clean address by reusing an existing domain (`media.kentechlab.net`) instead of buying a new one: a real ACM certificate on the CloudFront side, with a plain unproxied CNAME in Cloudflare doing the DNS pointing. Same security result as the dedicated domain, no extra registration cost. [Full writeup](docs/media-subdomain.md) |
 
 ## Why it's built this way
 
