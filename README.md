@@ -18,7 +18,7 @@ This repo hosts the source for the Kentech Lab landing page, a live dashboard-st
 | **DNS** | Dual Pi-hole deployment (Raspberry Pi 5 primary, Raspberry Pi Zero 2 W secondary) for ad-blocking and DNS-level filtering, with manual and DHCP-level failover paths |
 | **Storage** | Synology NAS (RAID array) with Hyper Backup offsite replication and snapshot retention |
 | **Containers** | Docker Compose stacks for internal tooling: Uptime Kuma, Cloudflare tunnel daemon, secondary Pi-hole instance |
-| **Monitoring** | Uptime Kuma tracking every service via both its public (Cloudflare) route and local-direct address, plus DNS-resolution-specific checks, not just "is the webpage up" |
+| **Monitoring** | Uptime Kuma tracking 26 services, tiered by real-world impact (Tier 1 public-facing vs Tier 2 internal), with keyword content checks, DNS-resolution-specific checks, and a daily automated Telegram digest, not just "is the webpage up." [Full writeup](docs/telegram-alerts.md) |
 | **Remote Access** | WireGuard VPN (UniFi Cloud Gateway) with Cloudflare-backed Dynamic DNS, giving full network-level access and home DNS filtering from anywhere |
 | **Automation** | PowerShell scripts for backup verification and configuration drift detection |
 | **Web Hosting / CDN** | AWS CloudFront + Route 53 + ACM. Registered domain (`kentechsolution.com`) with a public TLS certificate provisioned through ACM, attached as an alternate domain name on a CloudFront distribution, and routed via Route 53 alias records (no third-party redirect/shortener in the path). [Full writeup](docs/aws-hosting.md) |
@@ -30,12 +30,12 @@ Most home labs either expose services directly to the internet (risky) or hide e
 
 - **Public-facing services** go through Cloudflare Tunnel. Nothing touches the router's port forwarding, and everything sits behind an identity check before it ever reaches the origin.
 - **DNS is treated as critical infrastructure**, not an afterthought. A single Pi-hole going down shouldn't take the whole network's ad-blocking and filtering with it.
-- **Monitoring distinguishes edge failures from origin failures.** Every service has both a "through Cloudflare" and a "direct to the LAN" check, so an alert immediately tells you *where* the problem is, not just *that* there is one.
+- **Monitoring distinguishes edge failures from origin failures, and urgency from noise.** Every service has both a "through Cloudflare" and a "direct to the LAN" check, and every monitor is tagged by whether it's visitor-facing or internal, so an alert tells you both *where* the problem is and *how much it matters*.
 - **Hosting isn't locked to one provider.** The homelab runs on Cloudflare, but client/portfolio-facing sites run on AWS (CloudFront + Route 53 + ACM), matching infrastructure choice to the job rather than defaulting to a single stack everywhere.
 
 ## Tech stack
 
-`AWS` `CloudFront` `Route 53` `ACM` `Azure` `Cloudflare` `Docker` `Synology` `UniFi` `WireGuard` `PowerShell` `Uptime Kuma`
+`AWS` `CloudFront` `Route 53` `ACM` `Azure` `Cloudflare` `Docker` `Synology` `UniFi` `WireGuard` `PowerShell` `Python` `Uptime Kuma`
 
 ## Local development
 
