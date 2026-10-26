@@ -12,6 +12,8 @@ This repo hosts the source for the Kentech Lab landing page, a live dashboard-st
 
 📄 **Latest changes:** [October 2026 lab update](docs/2026-10-lab-update.md): Zero Trust private access, external watchdog, Vaultwarden upgrade, Fios TV integration, and VLAN segmentation.
 
+📧 **New:** [Microsoft 365 email on a lab domain](docs/m365-email-authentication.md): Exchange Online, SPF, DKIM, and DMARC configured, tested from message headers, and enforced at `p=reject` with aggregate reporting.
+
 ## Architecture overview
 
 | Layer | What's running |
@@ -27,6 +29,7 @@ This repo hosts the source for the Kentech Lab landing page, a live dashboard-st
 | **Automation** | PowerShell scripts for backup verification and configuration drift detection |
 | **Web Hosting / CDN** | AWS CloudFront + Route 53 + ACM. Registered domain (`kentechsolution.com`) with a public TLS certificate provisioned through ACM, attached as an alternate domain name on a CloudFront distribution, and routed via Route 53 alias records. [Full writeup](docs/aws-hosting.md) |
 | **Second Web Hosting Pattern** | AWS CloudFront + ACM + Cloudflare DNS. A second CloudFront site given a clean address by reusing an existing domain (`media.kentechlab.net`) instead of buying a new one, with a real ACM certificate and a plain unproxied CNAME in Cloudflare, protected by Zero Trust Access. [Full writeup](docs/media-subdomain.md) |
+| **Email / Messaging** | Microsoft 365 (Exchange Online) on `kentechlab.net`. Domain verified, MX and autodiscover added by hand in Cloudflare, SPF limited to Microsoft 365 with hard fail, DKIM signing with the domain's own selectors, and DMARC at `p=reject` with Cloudflare aggregate reporting. Rolled out in the production-safe order (none → test → reject). [Full writeup](docs/m365-email-authentication.md) |
 
 ## Why it's built this way
 
@@ -47,7 +50,7 @@ Most home labs either expose services directly to the internet (risky) or hide e
 
 ## Tech stack
 
-`AWS` `CloudFront` `Route 53` `ACM` `Azure` `Cloudflare` `Zero Trust` `Docker` `Synology` `UniFi` `VLANs` `Pi-hole` `Vaultwarden` `Home Assistant` `GitHub Actions` `PowerShell` `Python` `Uptime Kuma`
+`AWS` `CloudFront` `Route 53` `ACM` `Azure` `Microsoft 365` `Exchange Online` `SPF` `DKIM` `DMARC` `Cloudflare` `Zero Trust` `Docker` `Synology` `UniFi` `VLANs` `Pi-hole` `Vaultwarden` `Home Assistant` `GitHub Actions` `PowerShell` `Python` `Uptime Kuma`
 
 ## Local development
 
